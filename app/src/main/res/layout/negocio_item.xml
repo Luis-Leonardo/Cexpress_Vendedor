@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imgItemNegocio"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/negocio"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        android:id="@+id/txtViewItemNombreNegocio"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:text="Nombre del Negocio"
+        android:maxLines="1"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/imgItemNegocio" />
+
+    <TextView
+        android:id="@+id/txtViewItemMercadoNegocio"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:text="Mercado"
+        android:maxLines="1"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintTop_toBottomOf="@id/txtViewItemNombreNegocio"
+        app:layout_constraintLeft_toRightOf="@id/imgItemNegocio" />
+
+    <Button
+        android:id="@+id/btnEditarItemNegocio"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Editar"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/botones"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/btnEliminarItemNegocio"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Eliminar"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/botones_dark"
+        app:layout_constraintTop_toBottomOf="@id/btnEditarItemNegocio"
+        app:layout_constraintRight_toRightOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

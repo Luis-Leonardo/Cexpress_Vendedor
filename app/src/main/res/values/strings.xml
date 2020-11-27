@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Cexpress_Vendedor</string>
+    <string name="prompt_email">Usuario</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="prompt_nombre">Nombre</string>
+    <string name="prompt_direccion">Direccion</string>
+    <string name="prompt_confirmation">Confirmar Contraseña</string>
+    <string name="action_sign_in_short">Sign In</string>
+</resources>
