@@ -3,14 +3,20 @@ package com.example.cexpress_vendedor;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -18,11 +24,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -30,14 +38,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
 public class PerfilActivity extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener {
     ImageButton imgBtnRegresar, imgBtnFotoPerfil;
     TextInputLayout impNombrePerfil, impCorreoPerfil, impPasswordPerfil;
     EditText editNombrePerfil, editCorreoPerfil, editPasswordPerfil;
     Button btnModificarPerfil, btnGuardarPerfil, btnCancelarPerfil;
-    String nombreAnterior, correoAnterior, passwordAnterior, nuevoNombre, nuevoCorreo, nuevaPassword;
-    int idVendedor = 3;
+    String nombreAnterior, correoAnterior, passwordAnterior, fotoAnterior, nuevoNombre, nuevoCorreo, nuevaPassword, nuevaFoto;
+    int idVendedor;
     Boolean nombre = false, correo = false, password = false;
+    //Para las imagenes
+    String encodedImage;
 
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
@@ -67,7 +86,12 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
         cambiarEstadoEditText(editNombrePerfil, false);
         cambiarEstadoEditText(editCorreoPerfil, false);
         cambiarEstadoEditText(editPasswordPerfil, false);
+        imgBtnFotoPerfil.setEnabled(false);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        recuperarId();
         recuperarPerfil(idVendedor);
 
         imgBtnRegresar.setOnClickListener(new View.OnClickListener() {
@@ -90,6 +114,7 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
                 cambiarEstadoEditText(editNombrePerfil, true);
                 cambiarEstadoEditText(editCorreoPerfil, true);
                 cambiarEstadoEditText(editPasswordPerfil, true);
+                imgBtnFotoPerfil.setEnabled(true);
 
                 nombreAnterior = editNombrePerfil.getText().toString();
                 correoAnterior = editCorreoPerfil.getText().toString();
@@ -107,6 +132,7 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
                 cambiarEstadoEditText(editNombrePerfil, false);
                 cambiarEstadoEditText(editCorreoPerfil, false);
                 cambiarEstadoEditText(editPasswordPerfil, false);
+                imgBtnFotoPerfil.setEnabled(false);
 
                 validarCambios();
             }
@@ -118,10 +144,22 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
                 editNombrePerfil.setText(nombreAnterior);
                 editCorreoPerfil.setText(correoAnterior);
                 editPasswordPerfil.setText(passwordAnterior);
+                String urlFoto = "https://appsmoviles2020.000webhostapp.com/imagenes/"+fotoAnterior;
+                URL url = null;
+                try {
+                    url = new URL(urlFoto);
+                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    imgBtnFotoPerfil.setImageBitmap(bitmap);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 cambiarEstadoEditText(editNombrePerfil, false);
                 cambiarEstadoEditText(editCorreoPerfil, false);
                 cambiarEstadoEditText(editPasswordPerfil, false);
+                imgBtnFotoPerfil.setEnabled(false);
 
                 btnModificarPerfil.setVisibility(View.VISIBLE);
                 btnGuardarPerfil.setVisibility(View.GONE);
@@ -158,10 +196,19 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
             JSONArray jsonArray = response.getJSONArray("Vendedor");
             JSONObject jsonObject = jsonArray.getJSONObject(0);
 
+            fotoAnterior = jsonObject.getString("foto");
+            String urlFoto = "https://appsmoviles2020.000webhostapp.com/imagenes/"+jsonObject.getString("foto");
+            URL url = new URL(urlFoto);
+            Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            imgBtnFotoPerfil.setImageBitmap(bitmap);
             editNombrePerfil.setText(jsonObject.getString("nombre"));
             editCorreoPerfil.setText(jsonObject.getString("correo"));
             editPasswordPerfil.setText(jsonObject.getString("password"));
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -176,7 +223,7 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
             public void onClick(DialogInterface dialog, int i) {
                 if(opciones[i].equals("Tomar Foto")) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(intent.createChooser(intent, "Selecciona una opción"), 20);
+                    startActivityForResult(intent, 20);
                 } else if(opciones[i].equals("Elegir foto de la galería")) {
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.setType("image/");
@@ -193,14 +240,29 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            case 10:
-                Uri miPath=data.getData();
-                imgBtnFotoPerfil.setImageURI(miPath);
-                break;
-            case 20:
+        if(resultCode== Activity.RESULT_OK) {
+            switch (requestCode) {
+                case 10:
+                    Uri miPath=data.getData();
+                    try {
+                        InputStream inputStream = getContentResolver().openInputStream(miPath);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        imgBtnFotoPerfil.setImageBitmap(bitmap);
 
-                break;
+                        guardarImagen(bitmap);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 20:
+                    Bundle bundle = data.getExtras();
+                    Bitmap bitmap = (Bitmap) bundle.get("data");
+                    imgBtnFotoPerfil.setImageBitmap(bitmap);
+                    guardarImagen(bitmap);
+                    break;
+            }
+        } else {
+
         }
     }
 
@@ -250,14 +312,13 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
         }
     }
 
-    void guardarCambios(int idVendedor, String nombre, String correo, String password) {
-        String URL = "https://appsmoviles2020.000webhostapp.com/vendedor/actualizarVendedor.php?idVendedor="+idVendedor+"&nombre="+nombre+"&correo="+correo+
-                "&password="+password;
-        URL.replaceAll(" ", "%20").replaceAll("@", "%40");
+    void guardarCambios(final int idVendedor, final String nombre, final String correo, final String password) {
+        String URL = "https://appsmoviles2020.000webhostapp.com/vendedor/actualizarVendedor.php";
 
-        jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(String response) {
+                System.out.println(response);
                 Toast.makeText(PerfilActivity.this, "Cambios guardados", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
@@ -265,7 +326,31 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(PerfilActivity.this, error.toString(), Toast.LENGTH_LONG).show();
             }
-        });
-        request.add(jsonObjectRequest);
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("idVendedor", String.valueOf(idVendedor));
+                params.put("nombre", nombre);
+                params.put("correo", correo);
+                params.put("password", password);
+                params.put("foto", encodedImage);
+
+                return params;
+            }
+        };
+        request.add(stringRequest);
+    }
+
+    void recuperarId() {
+        SharedPreferences sharedPreferences = getSharedPreferences("Sesion", MODE_PRIVATE);
+        idVendedor = sharedPreferences.getInt("id", 0);
+    }
+
+    void guardarImagen(Bitmap imagen) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        imagen.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] imageBytes = stream.toByteArray();
+        encodedImage = android.util.Base64.encodeToString(imageBytes, Base64.DEFAULT);
     }
 }
