@@ -201,6 +201,7 @@ public class PerfilActivity extends AppCompatActivity implements Response.Listen
             URL url = new URL(urlFoto);
             Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
             imgBtnFotoPerfil.setImageBitmap(bitmap);
+            guardarImagen(bitmap);
             editNombrePerfil.setText(jsonObject.getString("nombre"));
             editCorreoPerfil.setText(jsonObject.getString("correo"));
             editPasswordPerfil.setText(jsonObject.getString("password"));

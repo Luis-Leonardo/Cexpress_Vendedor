@@ -157,7 +157,9 @@ public class NuevoNegocioActivity extends AppCompatActivity implements Response.
                         nuevaHoraApertura=hora+":"+minutos+":00";
                         if (hourOfDay>=12&&hourOfDay<24) {
                             periodo = "PM";
-                            hora = String.valueOf(hourOfDay-12);
+                            if(hourOfDay>12) {
+                                hora = String.valueOf(hourOfDay-12);
+                            }
                         } else {
                             periodo = "AM";
                         }
@@ -198,7 +200,9 @@ public class NuevoNegocioActivity extends AppCompatActivity implements Response.
                         nuevaHoraCierre=hora+":"+minutos+":00";
                         if (hourOfDay>=12&&hourOfDay<24) {
                             periodo = "PM";
-                            hora = String.valueOf(hourOfDay-12);
+                            if(hourOfDay>12) {
+                                hora = String.valueOf(hourOfDay-12);
+                            }
                         } else {
                             periodo = "AM";
                         }
