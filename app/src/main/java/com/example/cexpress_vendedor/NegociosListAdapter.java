@@ -63,7 +63,7 @@ public class NegociosListAdapter extends BaseAdapter {
         return nombres.indexOf(getItem(position));
     }
 
-    public  class Holder {
+    public class Holder {
         TextView txtViewItemNombreNegocio;
         TextView txtViewItemMercadoNegocio;
         Button btnEditarItemNegocio;
