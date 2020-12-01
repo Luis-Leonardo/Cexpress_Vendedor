@@ -2,6 +2,7 @@ package com.example.cexpress_vendedor;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -72,7 +73,11 @@ public class NegocioActivity extends AppCompatActivity implements Response.Liste
         btnNuevoProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent i = new Intent(NegocioActivity.this, NuevoProductoActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("idNegocio", idNegocio);
+                i.putExtra("datos", bundle);
+                startActivity(i);
             }
         });
 

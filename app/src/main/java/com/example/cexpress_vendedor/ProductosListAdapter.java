@@ -101,11 +101,11 @@ public class ProductosListAdapter extends BaseAdapter {
         holder.btnEditarItemProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent(context, EditarProductoActivity.class);
+                Intent intent = new Intent(context, EditarProductoActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("idProducto", idProductos.get(position).intValue());
                 intent.putExtra("datos", bundle);
-                context.startActivity(intent);*/
+                context.startActivity(intent);
             }
         });
 

@@ -334,7 +334,6 @@ public class NuevoNegocioActivity extends AppCompatActivity implements Response.
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     void validarDatos() {
