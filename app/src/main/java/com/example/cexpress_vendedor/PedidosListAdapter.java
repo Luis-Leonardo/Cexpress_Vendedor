@@ -47,7 +47,7 @@ public class PedidosListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         Holder holder = new Holder();
         View row;
 
@@ -59,11 +59,12 @@ public class PedidosListAdapter extends BaseAdapter {
         holder.txtViewCompradorPedido = row.findViewById(R.id.txtViewCompradorPedido);
 
         holder.txtViewIdPedido.setText("No. " + idPedidos.get(position));
-        String mes, dia, year;
+        final String mes, dia, year, fecha;
         dia = fechas.get(position).substring(8, 10);
         mes = fechas.get(position).substring(5, 7);
         year = fechas.get(position).substring(0, 4);
-        holder.txtViewFechaPedido.setText(dia+"/"+mes+"/"+year);
+        fecha = dia+"/"+mes+"/"+year;
+        holder.txtViewFechaPedido.setText(fecha);
         holder.txtViewNegocioPedido.setText("Negocio: " + negocios.get(position));
         if(estados.get(position).equals("En preparación")) {
             holder.txtViewEstadoPedido.setTextColor(0xFFFF9800);
@@ -80,12 +81,15 @@ public class PedidosListAdapter extends BaseAdapter {
         row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent i = new Intent(context, NegocioActivity.class);
+                Intent i = new Intent(context, PedidoActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putInt("idNegocio", idNegocios.get(position).intValue());
-                bundle.putString("nombre", nombres.get(position));
+                bundle.putInt("idPedido", idPedidos.get(position).intValue());
+                bundle.putString("fecha", fecha);
+                bundle.putString("comprador", compradores.get(position));
+                bundle.putString("estado", estados.get(position));
+                bundle.putString("negocio", negocios.get(position));
                 i.putExtra("datos", bundle);
-                context.startActivity(i);*/
+                context.startActivity(i);
             }
         });
 
